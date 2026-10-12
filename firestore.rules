@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidListing(data) {
+      return data.title is string && data.title.size() > 0 && data.title.size() <= 200
+        && data.propertyType is string && (data.propertyType == 'jual' || data.propertyType == 'sewa')
+        && data.buildingArea is number && data.buildingArea >= 0
+        && data.landArea is number && data.landArea >= 0
+        && data.vendorPrice is number && data.vendorPrice >= 0
+        && data.vendorPhone is string && data.vendorPhone.size() > 0 && data.vendorPhone.size() <= 30
+        && data.status is string && (data.status == 'available' || data.status == 'terjual' || data.status == 'tersewa')
+        && data.agentId is string && data.agentId == request.auth.uid;
+    }
+
+    // Connectivity test path
+    match /test/connection {
+      allow get: if true;
+    }
+
+    match /listings/{listingId} {
+      allow get: if isSignedIn() && (existing().agentId == request.auth.uid);
+      allow list: if isSignedIn() && (resource.data.agentId == request.auth.uid);
+      allow create: if isSignedIn()
+                    && isValidId(listingId)
+                    && isValidListing(incoming())
+                    && incoming().status == 'available';
+      allow update: if isSignedIn()
+                    && isValidId(listingId)
+                    && isValidListing(incoming())
+                    && existing().agentId == request.auth.uid
+                    && incoming().agentId == existing().agentId;
+      allow delete: if isSignedIn()
+                    && isValidId(listingId)
+                    && existing().agentId == request.auth.uid;
+    }
+  }
+}

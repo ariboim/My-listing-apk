@@ -1,0 +1,103 @@
+{
+  "entities": {
+    "Listing": {
+      "title": "Listing",
+      "description": "Property listing record for real estate agents",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Title or property description",
+          "maxLength": 200
+        },
+        "area": {
+          "type": "string",
+          "description": "District / region name included in buyer offer text (e.g. Cileungsi, Cibubur, Bogor, BSD)",
+          "maxLength": 100
+        },
+        "fullAddress": {
+          "type": "string",
+          "description": "Full specific address for private agent archive (never copied to buyer offer text)",
+          "maxLength": 500
+        },
+        "facilities": {
+          "type": "array",
+          "description": "List of property amenities and facilities"
+        },
+        "propertyType": {
+          "type": "string",
+          "description": "Listing type: jual or sewa",
+          "enum": ["jual", "sewa"]
+        },
+        "buildingArea": {
+          "type": "number",
+          "description": "Building area in square meters"
+        },
+        "landArea": {
+          "type": "number",
+          "description": "Land area in square meters"
+        },
+        "vendorPrice": {
+          "type": "number",
+          "description": "Vendor asking price in IDR"
+        },
+        "vendorPhone": {
+          "type": "string",
+          "description": "Vendor contact phone number",
+          "maxLength": 30
+        },
+        "vendorName": {
+          "type": "string",
+          "description": "Vendor contact name",
+          "maxLength": 100
+        },
+        "status": {
+          "type": "string",
+          "description": "Availability status of the property",
+          "enum": ["available", "terjual", "tersewa"]
+        },
+        "images": {
+          "type": "array",
+          "description": "List of compressed photos (maximum 5)"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Internal agent notes",
+          "maxLength": 1000
+        },
+        "agentId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the agent owner"
+        },
+        "agentEmail": {
+          "type": "string",
+          "description": "Email address of the agent"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": [
+        "title",
+        "propertyType",
+        "buildingArea",
+        "landArea",
+        "vendorPrice",
+        "vendorPhone",
+        "status",
+        "agentId"
+      ]
+    }
+  },
+  "firestore": {
+    "/listings/{listingId}": {
+      "schema": "Listing",
+      "description": "Collection storing agent property listings"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "My Listing - Arsip Properti Agen",
+  "description": "Aplikasi arsip dan manajemen listing properti agen dengan upload foto, update harga, dan status listing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
