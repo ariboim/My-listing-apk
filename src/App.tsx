@@ -447,9 +447,10 @@ export default function App() {
             <button
               onClick={() => setIsInstallModalOpen(true)}
               className="px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/60 font-semibold text-xs sm:text-sm shadow-md flex items-center space-x-2 transition cursor-pointer"
+              title="Tambahkan ke Layar Utama (Add to Home Screen)"
             >
               <Smartphone className="w-4 h-4 text-emerald-400" />
-              <span>Install APK</span>
+              <span>Add to Home Screen</span>
             </button>
 
             <button

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, Maximize, ShieldCheck, Sparkles, CheckCircle, ArrowRight, Building, KeyRound, PhoneCall } from 'lucide-react';
+import { Home, Maximize, ShieldCheck, Sparkles, CheckCircle, ArrowRight, Building, KeyRound, PhoneCall, Smartphone } from 'lucide-react';
 import { requestFullscreen } from '../utils/fullscreen';
 
 interface LoginScreenProps {
@@ -60,9 +60,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             <button
               onClick={onOpenInstallModal}
               className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition cursor-pointer"
+              title="Tambahkan ke Layar Utama (Add to Home Screen)"
             >
-              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Install APK Android</span>
+              <Smartphone className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Add to Home Screen</span>
             </button>
           )}
           <div className="hidden sm:flex items-center space-x-2 text-xs text-slate-400 bg-slate-900/80 px-3 py-1.5 rounded-full border border-slate-800">
