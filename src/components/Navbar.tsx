@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Maximize, Minimize, Plus, LogOut, User, ShieldCheck } from 'lucide-react';
+import { Home, Maximize, Minimize, Plus, LogOut, User, Smartphone, Download } from 'lucide-react';
 import { isFullscreen, toggleFullscreen } from '../utils/fullscreen';
 
 interface NavbarProps {
@@ -9,6 +9,7 @@ interface NavbarProps {
   isFullscreenActive: boolean;
   onToggleFullscreen: () => void;
   onOpenCreateModal: () => void;
+  onOpenInstallModal?: () => void;
   onLogout: () => void;
 }
 
@@ -19,6 +20,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   isFullscreenActive,
   onToggleFullscreen,
   onOpenCreateModal,
+  onOpenInstallModal,
   onLogout,
 }) => {
   return (
@@ -46,6 +48,18 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Action Controls */}
         <div className="flex items-center space-x-2 sm:space-x-3">
+          {/* APK / Install Button */}
+          {onOpenInstallModal && (
+            <button
+              onClick={onOpenInstallModal}
+              title="Pasang APK di Smartphone Android"
+              className="flex items-center space-x-1.5 px-3 py-2 rounded-lg bg-emerald-950/60 hover:bg-emerald-900/70 text-emerald-300 border border-emerald-500/40 transition text-xs font-semibold cursor-pointer shadow-sm shadow-emerald-900/30"
+            >
+              <Smartphone className="w-4 h-4 text-emerald-400" />
+              <span className="hidden sm:inline">Install APK</span>
+            </button>
+          )}
+
           {/* Fullscreen Button */}
           <button
             onClick={onToggleFullscreen}

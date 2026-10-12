@@ -26,7 +26,8 @@ import { UpdateListingModal } from './components/UpdateListingModal';
 import { ListingDetailModal } from './components/ListingDetailModal';
 import { DeleteModal } from './components/DeleteModal';
 import { ShareModal } from './components/ShareModal';
-import { Building, Plus, AlertCircle, Sparkles, FilterX } from 'lucide-react';
+import { InstallAppModal } from './components/InstallAppModal';
+import { Building, Plus, AlertCircle, Sparkles, FilterX, Smartphone } from 'lucide-react';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
@@ -47,6 +48,7 @@ export default function App() {
   const [detailListing, setDetailListing] = useState<Listing | null>(null);
   const [sharingListing, setSharingListing] = useState<Listing | null>(null);
   const [deletingListing, setDeletingListing] = useState<Listing | null>(null);
+  const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Notification Toast
@@ -388,12 +390,21 @@ export default function App() {
   // Show Auth Screen if not logged in and not in demo mode
   if (!currentUser && !isDemoUser) {
     return (
-      <LoginScreen
-        onLoginGoogle={handleLoginGoogle}
-        onLoginDemo={handleLoginDemo}
-        isLoading={authLoading}
-        error={loginError}
-      />
+      <>
+        <LoginScreen
+          onLoginGoogle={handleLoginGoogle}
+          onLoginDemo={handleLoginDemo}
+          onOpenInstallModal={() => setIsInstallModalOpen(true)}
+          isLoading={authLoading}
+          error={loginError}
+        />
+        {isInstallModalOpen && (
+          <InstallAppModal
+            isOpen={isInstallModalOpen}
+            onClose={() => setIsInstallModalOpen(false)}
+          />
+        )}
+      </>
     );
   }
 
@@ -415,6 +426,7 @@ export default function App() {
         isFullscreenActive={isFullscreenActive}
         onToggleFullscreen={handleToggleFullscreen}
         onOpenCreateModal={() => setIsCreateModalOpen(true)}
+        onOpenInstallModal={() => setIsInstallModalOpen(true)}
         onLogout={handleLogout}
       />
 
@@ -432,6 +444,14 @@ export default function App() {
           </div>
 
           <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setIsInstallModalOpen(true)}
+              className="px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/60 font-semibold text-xs sm:text-sm shadow-md flex items-center space-x-2 transition cursor-pointer"
+            >
+              <Smartphone className="w-4 h-4 text-emerald-400" />
+              <span>Install APK</span>
+            </button>
+
             <button
               onClick={() => setIsCreateModalOpen(true)}
               className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs sm:text-sm shadow-md shadow-amber-500/20 flex items-center space-x-2 transition cursor-pointer"
@@ -582,6 +602,13 @@ export default function App() {
           onClose={() => setDeletingListing(null)}
           onConfirm={handleDeleteListing}
           isDeleting={isDeleting}
+        />
+      )}
+
+      {isInstallModalOpen && (
+        <InstallAppModal
+          isOpen={isInstallModalOpen}
+          onClose={() => setIsInstallModalOpen(false)}
         />
       )}
     </div>

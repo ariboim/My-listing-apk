@@ -5,6 +5,7 @@ import { requestFullscreen } from '../utils/fullscreen';
 interface LoginScreenProps {
   onLoginGoogle: (requestFull: boolean) => Promise<void>;
   onLoginDemo: (requestFull: boolean) => void;
+  onOpenInstallModal?: () => void;
   isLoading: boolean;
   error?: string | null;
 }
@@ -12,6 +13,7 @@ interface LoginScreenProps {
 export const LoginScreen: React.FC<LoginScreenProps> = ({
   onLoginGoogle,
   onLoginDemo,
+  onOpenInstallModal,
   isLoading,
   error,
 }) => {
@@ -53,9 +55,20 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
           </div>
         </div>
 
-        <div className="hidden sm:flex items-center space-x-2 text-xs text-slate-400 bg-slate-900/80 px-3 py-1.5 rounded-full border border-slate-800">
-          <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          <span>Keamanan Cloud & Arsip Terenkripsi</span>
+        <div className="flex items-center space-x-2">
+          {onOpenInstallModal && (
+            <button
+              onClick={onOpenInstallModal}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Install APK Android</span>
+            </button>
+          )}
+          <div className="hidden sm:flex items-center space-x-2 text-xs text-slate-400 bg-slate-900/80 px-3 py-1.5 rounded-full border border-slate-800">
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span>Keamanan Cloud & Arsip Terenkripsi</span>
+          </div>
         </div>
       </header>
 
