@@ -44,6 +44,7 @@ jobs:
       - name: Bundle Web Assets into Android App
         run: |
           mkdir -p android/app/src/main/assets/www
+          cp -r dist/* android/app/src/main/assets/
           cp -r dist/* android/app/src/main/assets/www/
 
       - name: Configure Android SDK and Accept Licenses
@@ -142,5 +143,5 @@ jobs:
           TAG_NAME="v1.0.${{ github.run_number }}"
           gh release create "$TAG_NAME" "android/app/build/outputs/apk/debug/app-debug.apk" \
             --title "My Listing APK $TAG_NAME" \
-            --notes "Aplikasi Android My Listing - Arsip Properti Agen" \
+            --notes "Aplikasi Android My Listing - Arsip Properti Agen (Fixed Blank Screen)" \
             --latest
