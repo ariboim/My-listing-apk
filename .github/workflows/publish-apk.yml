@@ -46,6 +46,15 @@ jobs:
           mkdir -p android/app/src/main/assets/www
           cp -r dist/* android/app/src/main/assets/www/
 
+      - name: Configure Android SDK and Accept Licenses
+        run: |
+          SDK_DIR="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          echo "sdk.dir=$SDK_DIR" > android/local.properties
+          mkdir -p "$SDK_DIR/licenses"
+          printf "24333f8a63b6825ea9c5514f83c2829b004d1fee\nd56f5187479451eabf01fb78af6dfcb131a6481e\n84831b9409646a918e30573bab4c9c91346d8abd\n" > "$SDK_DIR/licenses/android-sdk-license"
+          printf "89388d41e21114d56984d671372074e547d74186\n" > "$SDK_DIR/licenses/android-sdk-preview-license"
+          printf "7394d6f360c0842d7e91338fd8306b6c41824147\n" > "$SDK_DIR/licenses/android-sdk-arm-dbt-license"
+
       - name: Create Debug Keystore If Missing
         run: |
           mkdir -p ~/.android
@@ -53,22 +62,71 @@ jobs:
             keytool -genkeypair -v -keystore ~/.android/debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US"
           fi
 
-      - name: Prepare Android Project
+      - name: Prepare Android Project Configuration
         run: |
-          sed -i 's/RepositoriesMode.FAIL_ON_PROJECT_REPOS/RepositoriesMode.PREFER_SETTINGS/g' android/settings.gradle || true
-          touch android/app/proguard-rules.pro
-          echo "sdk.dir=/usr/local/lib/android/sdk" > android/local.properties
-          yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          cd android
+
+          # 1. Konfigurasi gradle.properties untuk stabilitas memori & AndroidX
+          cat << 'EOF' > gradle.properties
+          org.gradle.jvmargs=-Xmx3072m -Dfile.encoding=UTF-8
+          android.useAndroidX=true
+          android.nonTransitiveRClass=true
+          EOF
+
+          # 2. Perbaiki settings.gradle (hapus konflik aturan repositori)
+          cat << 'EOF' > settings.gradle
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          rootProject.name = "MyListing"
+          include ':app'
+          EOF
+
+          # 3. Perbaiki build.gradle root
+          cat << 'EOF' > build.gradle
+          buildscript {
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+              dependencies {
+                  classpath 'com.android.tools.build:gradle:8.2.2'
+              }
+          }
+
+          allprojects {
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+
+          tasks.register('clean', Delete) {
+              delete rootProject.layout.buildDirectory
+          }
+          EOF
+
+          # 4. Pastikan file proguard ada
+          mkdir -p app
+          touch app/proguard-rules.pro
 
       - name: Compile Android Debug APK
         working-directory: android
         env:
           ANDROID_HOME: /usr/local/lib/android/sdk
           ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
-        run: gradle assembleDebug --stacktrace --no-daemon
+        run: |
+          gradle wrapper --gradle-version 8.5
+          chmod +x gradlew
+          ./gradlew :app:assembleDebug --stacktrace --no-daemon
 
       - name: Validate Compiled APK
         run: |
+          ls -la android/app/build/outputs/apk/debug/
           test -s android/app/build/outputs/apk/debug/app-debug.apk
 
       - name: Upload APK Artifact
