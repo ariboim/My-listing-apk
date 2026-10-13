@@ -41,9 +41,6 @@ jobs:
         with:
           gradle-version: '8.5'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Bundle Web Assets into Android App
         run: |
           mkdir -p android/app/src/main/assets/www
@@ -58,6 +55,8 @@ jobs:
 
       - name: Compile Android Debug APK
         working-directory: android
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
         run: gradle :app:assembleDebug --no-daemon
 
       - name: Validate Compiled APK
@@ -69,4 +68,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG_NAME="v1.0.${{ github.run_number }}"
-          gh release create "$TAG_NAME" "android/app/build/outputs/apk/debug/app-debug.apk" --title "My Listing APK $TAG_NAME" --notes "Aplikasi Android My Listing - Arsip Properti Agen" --latest
+          gh release create "$TAG_NAME" "android/app/build/outputs/apk/debug/app-debug.apk" \
+            --title "My Listing APK $TAG_NAME" \
+            --notes "Aplikasi Android My Listing - Arsip Properti Agen" \
+            --latest
